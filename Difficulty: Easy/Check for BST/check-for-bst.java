@@ -98,11 +98,15 @@ class GfG {
             else
                 System.out.println("false");
             t--;
-        }
+        
+System.out.println("~");
+}
     }
 }
 
 // } Driver Code Ends
+
+
 
 
 
