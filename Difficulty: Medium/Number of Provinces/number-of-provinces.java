@@ -23,46 +23,64 @@ class GFG {
 
             Solution ob = new Solution();
             System.out.println(ob.numProvinces(adj,V));
-        }
+        
+System.out.println("~");
+}
     }
 }
 // } Driver Code Ends
 
 
 //User function Template for Java
-
+class DisjointSet{
+    int n;
+    int[] parent;
+    int[] size;
+    DisjointSet(int n){
+        this.n = n;
+        parent = new int[n];
+        for(int i = 0 ; i < n ; i++){
+            parent[i] = i;
+        }
+        size = new int[n];
+        Arrays.fill(size,1);
+    }
+    int findParent(int node){
+        if(parent[node] == node) return node;
+        return parent[node] = findParent(parent[node]);
+    }
+    void union(int u,int v){
+        int pu = findParent(u);
+        int pv = findParent(v);
+        if(size[pu] >= size[pv]){
+            parent[pv] = pu;
+            size[pu] += size[pv];
+        }
+        else{
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        }
+    }
+}
 class Solution {
     static int numProvinces(ArrayList<ArrayList<Integer>> adj, int V) {
         // code here
-        List<List<Integer>> adjList = new ArrayList<>();
+        DisjointSet ds = new DisjointSet(V);
+        int k = 0;
         for(int i = 0 ; i < V ; i++){
-            adjList.add(new ArrayList<>());
-        }
-        for(int i = 0 ; i < adj.size() ; i++){
-            for(int j = 0 ; j < adj.get(i).size() ; j++){
-                if(i != j && adj.get(i).get(j) == 1){
-                    adjList.get(i).add(j);
+            for(int j = 0 ; j < V ; j++){
+                if(adj.get(i).get(j) == 1){
+                    ds.union(i,j);
                 }
             }
         }
-        int res = 0;
-        boolean[] vis = new boolean[V];
+        int count = 0;
+        // System.out.println(Arrays.toString(ds.parent));
         for(int i = 0 ; i < V ; i++){
-            if(!vis[i]){
-                res++;
-                Queue<Integer> q = new LinkedList<>();
-                q.add(i);
-                while(!q.isEmpty()){
-                    int x = q.poll();
-                    for(int each : adjList.get(x)){
-                        if(!vis[each]){
-                            q.add(each);
-                            vis[each] = true;
-                        }
-                    }
-                }
+            if(ds.parent[i] == i){
+                count++;
             }
         }
-        return res;
+        return count;
     }
 };
