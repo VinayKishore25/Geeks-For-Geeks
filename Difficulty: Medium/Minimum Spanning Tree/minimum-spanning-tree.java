@@ -37,28 +37,71 @@ public class Main {
 
 
 // User function Template for Java
-
+class DisjointSet{
+    int n;
+    int[] parent;
+    int[] size;
+    DisjointSet(int n){
+        this.n = n;
+        parent = new int[n];
+        for(int i = 0 ; i < n ; i++){
+            parent[i] = i;
+        }
+        size = new int[n];
+        Arrays.fill(size,1);
+    }
+    int findParent(int node){
+        if(parent[node] == node){
+            return node;
+        }
+        return parent[node] = findParent(parent[node]);
+    }
+    void union(int u,int v){
+        int pu = findParent(u);
+        int pv = findParent(v);
+        if(size[pu] >= size[pv]){
+            size[pu] += size[pv];
+            parent[pv] = pu;
+        }
+        else{
+            parent[pu] = pv;
+            size[pv] += size[pu];
+        }
+    }
+}
+class Edge{
+    int u;
+    int v;
+    int w;
+    Edge(int u,int v,int w){
+        this.u = u;
+        this.v = v;
+        this.w = w;
+    }
+}
 class Solution {
     static int spanningTree(int V, int E, List<List<int[]>> adj) {
         // Code Here.
-        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b) -> a[1] - b[1]);
-        boolean[] vis = new boolean[V];
-        vis[0] = true;
-        pq.add(new int[]{0,0});
-        int totalWeight = 0;
-        while(!pq.isEmpty()){
-            int[] root = pq.poll();
-            int node = root[0];
-            int weight = root[1];
-            if(!vis[node]){
-                vis[node] = true;
-                totalWeight += weight;
-            }
-            for(int[] pair : adj.get(node)){
-                if(!vis[pair[0]])
-                pq.add(pair);
+        List<Edge> edges = new ArrayList<>();
+        DisjointSet ds = new DisjointSet(V);
+        int n = adj.size();
+        for(int i = 0 ; i < n ;i++){
+            for(int[] edge : adj.get(i)){
+                edges.add(new Edge(i,edge[0],edge[1]));
             }
         }
-        return totalWeight;
+        n = edges.size();
+        Collections.sort(edges,(a,b) -> (a.w - b.w));
+        int twt = 0;
+        for(int i = 0 ; i < n ; i++){
+            int u = edges.get(i).u;
+            int v = edges.get(i).v;
+            int w = edges.get(i).w;
+            if(ds.findParent(u) != ds.findParent(v)){
+                twt += w;
+                ds.union(u,v);
+            }
+        }
+        return twt;
     }
 }
