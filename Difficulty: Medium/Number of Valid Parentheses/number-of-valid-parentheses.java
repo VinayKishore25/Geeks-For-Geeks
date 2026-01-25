@@ -1,0 +1,18 @@
+class Solution {
+    int findWays(int n) {
+        // code here
+        if(n%2!=0){
+            return 0;
+        }
+        int k=n/2;
+        int []dp=new int[k+1];
+        dp[0]=1;
+        
+        for (int i = 1; i <= k; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i]+=dp[j]*dp[i-j-1];
+            }
+        }
+        return dp[k];
+    }
+}
